@@ -1,0 +1,27 @@
+FROM ubuntu:20.04
+
+ENV USER_UID=1001 \
+    USER_NAME=proactive-horizontal-pod-autoscaler
+
+RUN apt-get update
+RUN apt-get install wget -y
+RUN wget https://dl.google.com/go/go1.11.linux-amd64.tar.gz
+RUN tar -C /usr/local -xzf go1.11.linux-amd64.tar.gz
+RUN export PATH=$PATH:/usr/local/go/bin
+RUN apt install python3-pip -y
+RUN pip3 install sklearn
+RUN apt-get install sqlite wget -y
+
+COPY evaluate.go /
+COPY store.go /
+COPY randomforest.py /
+
+RUN mkdir -p ${HOME} && \
+    chown ${USER_UID}:0 ${HOME} && \
+    chmod ug+rwx $HOME && \
+    chmod g+rw /etc/passwd
+
+RUN mkdir /store && \
+    chown ${USER_UID}:0 /store
+
+USER ${USER_UID}

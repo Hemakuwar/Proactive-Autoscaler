@@ -1,0 +1,18 @@
+FROM python:3.7-slim AS python
+
+# Set up working dir
+WORKDIR /app
+
+RUN mkdir /results
+
+# Install dependencies
+COPY requirements.txt /app/
+RUN pip install -r /app/requirements.txt
+
+# Add locust file
+COPY locust/ /locust/
+
+# Add main file
+COPY load.py /app/
+
+CMD [ "python", "-u", "/app/load.py" ]
